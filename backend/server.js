@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 const upload = multer();
 
-// GET endpoint (you can keep this if needed)
+// GET endpoint
 app.get("/api/endpoint", (req, res) => {
     res.json({ operation_code: 12345 });
 });
@@ -17,26 +17,29 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
     const data = req.body;
     const file = req.file;
 
-    
-
     // Extracting data
     const userId = data.user_id || "1234";
     const email = data.college_email || "kanishkgupta210906@acropolis.in";
     const rollNumber = data.roll_number || "0827IT211055";
-    // var inputArray;
 
+    let inputArray = [];
     try {
-        var inputArray = JSON.parse(data.inputArray || "[]");
+        // Check if `data` field exists and is an array
+        inputArray = data.data || [];
+        if (!Array.isArray(inputArray)) {
+            throw new Error("Input data is not an array");
+        }
     } catch (e) {
-        return res.status(400).json({ error: "Invalid JSON input array" });
+        console.error("Error parsing inputArray:", e.message);
+        return res.status(400).json({ error: "Invalid input array" });
     }
 
     // Process input array
-    const numbers = inputArray.filter((x) => !isNaN(x));
+    const numbers = inputArray.filter((x) => !isNaN(x) && typeof x === "string");
     const alphabets = inputArray.filter((x) => typeof x === "string" && /^[a-zA-Z]$/.test(x));
     const lowercase = alphabets.filter((x) => x === x.toLowerCase());
-    const highestLowercase = lowercase.sort().pop() || null;
-    const primeFound = numbers.some(isPrime);
+    const highestLowercase = lowercase.length > 0 ? [...lowercase].sort()[lowercase.length - 1] : null;
+    const primeFound = numbers.some((x) => isPrime(parseInt(x)));
 
     // Process file
     const fileValid = file && (file.mimetype.startsWith("text/") || file.mimetype.startsWith("image/"));
@@ -68,6 +71,7 @@ function isPrime(num) {
     }
     return true;
 }
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
