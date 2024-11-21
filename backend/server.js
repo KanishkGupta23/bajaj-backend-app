@@ -18,10 +18,16 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
     const file = req.file;
 
     // Extracting data
-    const userId = data.user_id || "Unknown";
-    const email = data.college_email || "Unknown";
-    const rollNumber = data.roll_number || "Unknown";
-    const inputArray = JSON.parse(data.input_array || "[]");
+    const userId = data.user_id || "1234";
+    const email = data.college_email || "kanishkgupta210906@acropolis.in";
+    const rollNumber = data.roll_number || "0827IT211055";
+    let inputArray;
+
+    try {
+        inputArray = JSON.parse(data.inputArray || "[]");
+    } catch (e) {
+        return res.status(400).json({ error: "Invalid JSON input array" });
+    }
 
     // Process input array
     const numbers = inputArray.filter((x) => !isNaN(x));
@@ -43,11 +49,11 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
         roll_number: rollNumber,
         numbers: numbers,
         alphabets: alphabets,
-        highest_lowercase_alphabet: highestLowercase ? [highestLowercase] : null, // Wrap in array as per new structure
+        highest_lowercase_alphabet: highestLowercase ? [highestLowercase] : null, // Always return as array
         is_prime_found: primeFound,
         file_valid: fileValid,
-        file_mime_type: mimeType || null, // null if no file or mime type
-        file_size_kb: fileSize || null,  // null if no file size available
+        file_mime_type: mimeType || null, // Null if no file is uploaded
+        file_size_kb: fileSize || null, // Null if no file size is available
     });
 });
 
