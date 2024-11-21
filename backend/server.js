@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 const upload = multer();
 
-// GET endpoint
+// GET endpoint (you can keep this if needed)
 app.get("/api/endpoint", (req, res) => {
     res.json({ operation_code: 12345 });
 });
@@ -19,12 +19,12 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
 
     // Extracting data
     const userId = data.user_id || "Unknown";
-    const collegeEmail = data.college_email || "Unknown";
+    const email = data.college_email || "Unknown";
     const rollNumber = data.roll_number || "Unknown";
     const inputArray = JSON.parse(data.input_array || "[]");
 
     // Process input array
-    const numbers = inputArray.filter((x) => typeof x === "number");
+    const numbers = inputArray.filter((x) => !isNaN(x));
     const alphabets = inputArray.filter((x) => typeof x === "string" && /^[a-zA-Z]$/.test(x));
     const lowercase = alphabets.filter((x) => x === x.toLowerCase());
     const highestLowercase = lowercase.sort().pop() || null;
@@ -35,24 +35,23 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
     const mimeType = file ? file.mimetype : null;
     const fileSize = file ? (file.size / 1024).toFixed(2) : null;
 
+    // Respond with the desired structure
     res.json({
-        status: "Success",
+        is_success: true,
         user_id: userId,
-        college_email_id: collegeEmail,
-        college_roll_number: rollNumber,
+        email: email,
+        roll_number: rollNumber,
         numbers: numbers,
         alphabets: alphabets,
-        highest_lowercase_alphabet: highestLowercase,
-        prime_found: primeFound,
-        file: {
-            valid: fileValid,
-            mime_type: mimeType,
-            file_size_kb: fileSize,
-        },
+        highest_lowercase_alphabet: highestLowercase ? [highestLowercase] : null, // Wrap in array as per new structure
+        is_prime_found: primeFound,
+        file_valid: fileValid,
+        file_mime_type: mimeType || null, // null if no file or mime type
+        file_size_kb: fileSize || null,  // null if no file size available
     });
 });
 
-// Prime number checker
+// Prime number checker function
 function isPrime(num) {
     if (num < 2) return false;
     for (let i = 2; i <= Math.sqrt(num); i++) {
@@ -62,5 +61,5 @@ function isPrime(num) {
 }
 
 // Start the server
-const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
