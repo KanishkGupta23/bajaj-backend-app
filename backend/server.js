@@ -17,11 +17,13 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
     const data = req.body;
     const file = req.file;
 
+    
+
     // Extracting data
     const userId = data.user_id || "1234";
     const email = data.college_email || "kanishkgupta210906@acropolis.in";
     const rollNumber = data.roll_number || "0827IT211055";
-    let inputArray;
+    var inputArray;
 
     try {
         inputArray = JSON.parse(data.inputArray || "[]");
@@ -49,6 +51,7 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
         roll_number: rollNumber,
         numbers: numbers,
         alphabets: alphabets,
+        lowercase: lowercase,
         highest_lowercase_alphabet: highestLowercase ? [highestLowercase] : null, // Always return as array
         is_prime_found: primeFound,
         file_valid: fileValid,
