@@ -23,10 +23,10 @@ app.post("/api/endpoint", upload.single("file"), (req, res) => {
     const userId = data.user_id || "1234";
     const email = data.college_email || "kanishkgupta210906@acropolis.in";
     const rollNumber = data.roll_number || "0827IT211055";
-    var inputArray;
+    // var inputArray;
 
     try {
-        inputArray = JSON.parse(data.inputArray || "[]");
+        var inputArray = JSON.parse(data.inputArray || "[]");
     } catch (e) {
         return res.status(400).json({ error: "Invalid JSON input array" });
     }
